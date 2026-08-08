@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Design Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:#f0f0f5;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:12px;padding:12px 20px;background:#fff;border-bottom:1px solid #e0e0e8}
+.logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+h1{font-size:18px;font-weight:600;color:#1a1a2e}
+.toolbar{display:flex;gap:6px;margin-left:auto;background:#f5f5fa;padding:6px;border-radius:10px}
+.toolbar button{width:40px;height:40px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.toolbar button:hover{background:#e8e8f0}
+.toolbar button.active{background:#7c3aed;color:#fff}
+.export-btn{background:#7c3aed!important;color:#fff!important;font-size:13px;font-weight:500;width:auto;padding:0 16px;gap:6px}
+.export-btn:hover{background:#6d28d9!important}
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:240px;background:#fff;border-right:1px solid #e0e0e8;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-section{padding:16px;border-bottom:1px solid #f0f0f5}
+.sidebar-section h3{font-size:12px;font-weight:600;color:#666;text-transform:uppercase;margin-bottom:12px}
+.prop-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.prop-row label{font-size:13px;color:#444;min-width:60px}
+.prop-row input{flex:1;padding:8px 10px;border:1px solid #e0e0e8;border-radius:6px;font-size:13px;font-family:inherit}
+.prop-row input:focus{outline:none;border-color:#7c3aed}
+.prop-row select{width:100%;padding:8px 10px;border:1px solid #e0e0e8;border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+.color-picker-wrap{display:flex;align-items:center;gap:8px}
+.color-picker{width:40px;height:32px;border:1px solid #e0e0e8;border-radius:6px;cursor:pointer;padding:0}
+.font-select{width:100%}
+.canvas-area{flex:1;display:flex;align-items:center;justify-content:center;background:#d9d9e3;overflow:auto;padding:40px}
+.canvas-wrapper{box-shadow:0 10px 40px rgba(0,0,0,.15);position:relative}
+canvas{border-radius:4px}
+.layers-list{flex:1;overflow-y:auto}
+.layer-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f8fc;border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all .2s}
+.layer-item:hover{background:#f0f0fa}
+.layer-item.selected{background:#ede9fe;border:1px solid #7c3aed}
+.layer-item .layer-icon{font-size:16px}
+.layer-item .layer-name{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer-item .layer-actions{display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.layer-item:hover .layer-actions{opacity:1}
+.layer-item button{border:none;background:transparent;cursor:pointer;font-size:14px;padding:4px}
+.layer-item button:hover{color:#7c3aed}
+.templates-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.template-thumb{aspect-ratio:1;background:#f5f5fa;border:2px solid transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .2s}
+.template-thumb:hover{border-color:#7c3aed;transform:scale(1.02)}
+.shape-btn{width:100%;padding:10px;border:1px solid #e0e0e8;border-radius:6px;background:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px;transition:all .2s}
+.shape-btn:hover{background:#f5f5fa;border-color:#7c3aed}
+.image-upload{display:flex;flex-direction:column;gap:8px}
+.upload-btn{width:100%;padding:12px;border:2px dashed #d0d0e0;border-radius:8px;background:#fafafa;cursor:pointer;font-size:13px;color:#666;transition:all .2s}
+.upload-btn:hover{border-color:#7c3aed;background:#f5f0ff}
+.hidden-input{display:none}
+.slider-wrap{display:flex;align-items:center;gap:8px}
+.slider-wrap input[type="range"]{flex:1;height:4px;background:#e0e0e8;border-radius:2px;appearance:none;cursor:pointer}
+.slider-wrap input[type="range"]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:#7c3aed;cursor:pointer}
+.slider-wrap span{font-size:12px;color:#666;min-width:35px}
+.alert{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.export-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000}
+.export-modal.active{display:flex}
+.export-modal-content{background:#fff;border-radius:16px;padding:32px;width:400px;max-width:90%}
+.export-modal h2{font-size:20px;margin-bottom:20px}
+.export-options{display:flex;flex-direction:column;gap:12px}
+.export-option{border:2px solid #e0e0e8;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s}
+.export-option:hover{border-color:#7c3aed}
+.export-option.selected{border-color:#7c3aed;background:#f9f5ff}
+.export-option input{display:none}
+.export-option label{display:flex;align-items:center;gap:12px;cursor:pointer}
+.export-option .format-icon{width:48px;height:48px;border-radius:8px;background:#f5f5fa;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.export-option .format-info h4{font-size:15px;margin-bottom:2px}
+.export-option .format-info p{font-size:12px;color:#888}
+.export-modal-actions{display:flex;gap:12px;margin-top:24px}
+.export-modal-actions button{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer}
+.export-modal-actions .cancel{background:#f0f0f5;border:none;color:#444}
+.export-modal-actions .confirm{background:#7c3aed;border:none;color:#fff}
+.zoom-controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 16px;border-radius:30px;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:8px}
+.zoom-controls button{border:none;background:transparent;cursor:pointer;font-size:16px;padding:4px 8px}
+.zoom-controls span{font-size:13px;color:#666}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">A</div>
+  <h1>Aura Design Studio</h1>
+  <div class="toolbar">
+    <button onclick="setTool('select')" class="active" title="Selecionar" data-tool="select">🖱️</button>
+    <button onclick="setTool('text')" title="Adicionar Texto" data-tool="text">T</button>
+    <button onclick="addShape('rect')" title="Retângulo">⬜</button>
+    <button onclick="addShape('circle')" title="Círculo">⭕</button>
+    <button onclick="addShape('triangle')" title="Triângulo">🔺</button>
+    <button onclick="addShape('line')" title="Linha">➖</button>
+    <button onclick="triggerImageUpload()" title="Upload Imagem">🖼️</button>
+    <button onclick="undo()" title="Desfazer">↩️</button>
+    <button onclick="redo()" title="Refazer">↪️</button>
+    <button onclick="showExportModal()" class="export-btn" title="Exportar">📥 Exportar</button>
+  </div>
+  <input type="file" id="imageUpload" class="hidden-input" accept="image/*" onchange="handleImageUpload(event)">
+</header>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h3>Templates</h3>
+      <div class="templates-grid">
+        <div class="template-thumb" onclick="applyTemplate('instagram-post')" title="Post Instagram">📸</div>
+        <div class="template-thumb" onclick="applyTemplate('story')" title="Story">📱</div>
+        <div class="template-thumb" onclick="applyTemplate('facebook')" title="Facebook">📘</div>
+        <div class="template-thumb" onclick="applyTemplate('twitter')" title="Twitter">🐦</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Background</h3>
+      <div class="image-upload">
+        <button class="upload-btn" onclick="triggerBgUpload()">📁 Upload Imagem de Fundo</button>
+        <button class="upload-btn" onclick="setBgColor()">🎨 Cor Sólida</button>
+      </div>
+      <input type="file" id="bgUpload" class="hidden-input" accept="image/*" onchange="handleBgUpload(event)">
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Texto</h3>
+      <div class="prop-row">
+        <label>Fonte</label>
+        <select class="font-select" id="fontFamily" onchange="updateSelectedProp('fontFamily', this.value)">
+          <option value="Inter">Inter</option>
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Times New Roman">Times</option>
+          <option value="Courier New">Courier</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Impact">Impact</option>
+        </select>
+      </div>
+      <div class="prop-row">
+        <label>Tamanho</label>
+        <input type="number" id="fontSize" value="32" min="8" max="200" onchange="updateSelectedProp('fontSize', parseInt(this.value))">
+      </div>
+      <div class="prop-row">
+        <label>Cor</label>
+        <input type="color" class="color-picker" id="textColor" value="#000000" onchange="updateSelectedProp('fill', this.value)">
+      </div>
+      <div class="prop-row">
+        <label>Negrito</label>
+        <input type="checkbox" id="boldCheck" onchange="updateSelectedProp('fontWeight', this.checked ? 'bold' : 'normal')">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Forma</h3>
+      <div class="prop-row">
+        <label>Cor</label>
+        <input type="color" class="color-picker" id="shapeColor" value="#7c3aed" onchange="updateSelectedProp('fill', this.value)">
+      </div>
+      <div class="prop-row">
+        <label>Borda</label>
+        <input type="color" class="color-picker" id="strokeColor" value="#000000" onchange="updateSelectedProp('stroke', this.value)">
+      </div>
+      <div class="prop-row">
+        <label>Espessura</label>
+        <div class="slider-wrap">
+          <input type="range" id="strokeWidth" min="0" max="20" value="0" onchange="updateSelectedProp('strokeWidth', parseInt(this.value))">
+          <span id="strokeWidthVal">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Camadas</h3>
+      <div class="layers-list" id="layersList"></div>
+    </div>
+  </div>
+
+  <div class="canvas-area">
+    <div class="canvas-wrapper">
+      <canvas id="canvas" width="1080" height="1080"></canvas>
+    </div>
+    <div class="zoom-controls">
+      <button onclick="zoomOut()">−</button>
+      <span id="zoomLevel">100%</span>
+      <button onclick="zoomIn()">+</button>
+      <button onclick="zoomFit()">⊡</button>
+    </div>
+  </div>
+</div>
+
+<div class="export-modal" id="exportModal">
+  <div class="export-modal-content">
+    <h2>Exportar Design</h2>
+    <div class="export-options">
+      <div class="export-option selected" onclick="selectFormat('png')">
+        <input type="radio" name="format" value="png" checked>
+        <label>
+          <div class="format-icon">PNG</div>
+          <div class="format-info">
+            <h4>PNG</h4>
+            <p>Melhor para web, com transparência</p>
+          </div>
+        </label>
+      </div>
+      <div class="export-option" onclick="selectFormat('jpeg')">
+        <input type="radio" name="format" value="jpeg">
+        <label>
+          <div class="format-icon">JPG</div>
+          <div class="format-info">
+            <h4>JPEG</h4>
+            <p>Menor arquivo, sem transparência</p>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="export-modal-actions">
+      <button class="cancel" onclick="hideExportModal()">Cancelar</button>
+      <button class="confirm" onclick="exportDesign()">Baixar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script>
+let canvas;
+let currentTool = 'select';
+let history = [];
+let historyIndex = -1;
+let zoom = 1;
+let selectedFormat = 'png';
+let canvasWidth = 1080;
+let canvasHeight = 1080;
+
+const templates = {
+  'instagram-post': { width: 1080, height: 1080 },
+  'story': { width: 1080, height: 1920 },
+  'facebook': { width: 1200, height: 630 },
+  'twitter': { width: 1600, height: 900 }
+};
+
+function initCanvas() {
+  canvas = new fabric.Canvas('canvas', {
+    backgroundColor: '#ffffff',
+    selection: true,
+    preserveObjectStacking: true
+  });
+
+  canvas.on('selection:created', updatePropsPanel);
+  canvas.on('selection:updated', updatePropsPanel);
+  canvas.on('selection:cleared', clearPropsPanel);
+  canvas.on('object:modified', saveState);
+  canvas.on('object:added', saveState);
+
+  saveState();
+  updateLayers();
+}
+
+function setTool(tool) {
+  currentTool = tool;
+  document.querySelectorAll('.toolbar button[data-tool]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tool === tool);
+  });
+
+  if (tool === 'text') {
+    canvas.isDrawingMode = false;
+    canvas.defaultCursor = 'text';
+  } else {
+    canvas.defaultCursor = 'default';
+  }
+}
+
+function addShape(type) {
+  let shape;
+  const commonProps = {
+    left: canvasWidth / 2 - 100,
+    top: canvasHeight / 2 - 100,
+    fill: '#7c3aed',
+    stroke: null,
+    strokeWidth: 0
+  };
+
+  switch(type) {
+    case 'rect':
+      shape = new fabric.Rect({
+        ...commonProps,
+        width: 200,
+        height: 150
+      });
+      break;
+    case 'circle':
+      shape = new fabric.Circle({
+        ...commonProps,
+        radius: 100
+      });
+      break;
+    case 'triangle':
+      shape = new fabric.Triangle({
+        ...commonProps,
+        width: 180,
+        height: 150
+      });
+      break;
+    case 'line':
+      shape = new fabric.Line([50, 50, 200, 50], {
+        stroke: '#7c3aed',
+        strokeWidth: 4,
+        left: canvasWidth / 2 - 75,
+        top: canvasHeight / 2
+      });
+      shape.set(commonProps);
+      break;
+  }
+
+  if (shape) {
+    canvas.add(shape);
+    canvas.setActiveObject(shape);
+    canvas.renderAll();
+  }
+}
+
+canvas?.on('mouse:dblclick', function(e) {
+  if (currentTool === 'text' && !e.target) {
+    const text = new fabric.IText('Clique para editar', {
+      left: e.e.offsetX / zoom,
+      top: e.e.offsetY / zoom,
+      fontSize: 32,
+      fontFamily: 'Inter',
+      fill: '#000000'
+    });
+    canvas.add(text);
+    canvas.setActiveObject(text);
+    text.enterEditing();
+    canvas.renderAll();
+  }
+});
+
+function triggerImageUpload() {
+  document.getElementById('imageUpload').click();
+}
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(f) {
+      fabric.Image.fromURL(f.target.result, function(img) {
+        const scale = Math.min(300 / img.width, 300 / img.height);
+        img.set({
+          left: canvasWidth / 2 - (img.width * scale) / 2,
+          top: canvasHeight / 2 - (img.height * scale) / 2,
+          scaleX: scale,
+          scaleY: scale
+        });
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        canvas.renderAll();
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function triggerBgUpload() {
+  document.getElementById('bgUpload').click();
+}
+
+function handleBgUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(f) {
+      fabric.Image.fromURL(f.target.result, function(img) {
+        img.set({
+          width: canvas.width,
+          height: canvas.height,
+          left: 0,
+          top: 0,
+          selectable: false,
+          evented: false
+        });
+        canvas.backgroundImage = img;
+        canvas.renderAll();
+        saveState();
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function setBgColor() {
+  const color = prompt('Digite a cor em hexadecimal (ex: #ff0000):', '#7c3aed');
+  if (color) {
+    canvas.backgroundColor = color;
+    canvas.backgroundImage = null;
+    canvas.renderAll();
+    saveState();
+  }
+}
+
+function updateSelectedProp(prop, value) {
+  const obj = canvas.getActiveObject();
+  if (!obj) return;
+
+  obj.set(prop, value);
+
+  if (prop === 'strokeWidth') {
+    document.getElementById('strokeWidthVal').textContent = value;
+    if (value > 0) {
+      obj.set('stroke', document.getElementById('strokeColor').value);
+    } else {
+      obj.set('stroke', null);
+    }
+  }
+
+  canvas.renderAll();
+  saveState();
+}
+
+function updatePropsPanel() {
+  const obj = canvas.getActiveObject();
+  if (!obj) return;
+
+  const isText = obj.type === 'i-text' || obj.type === 'text';
+
+  if (isText) {
+    document.getElementById('fontFamily').value = obj.fontFamily || 'Inter';
+    document.getElementById('fontSize').value = obj.fontSize || 32;
+    document.getElementById('textColor').value = obj.fill || '#000000';
+    document.getElementById('boldCheck').checked = obj.fontWeight === 'bold';
+  }
+
+  if (obj.fill && obj.fill !== 'transparent') {
+    const colorInput = isText ? document.getElementById('textColor') : document.getElementById('shapeColor');
+    colorInput.value = obj.fill;
+  }
+
+  if (obj.strokeWidth !== undefined) {
+    document.getElementById('strokeWidth').value = obj.strokeWidth;
+    document.getElementById('strokeWidthVal').textContent = obj.strokeWidth;
+    if (obj.stroke) {
+      document.getElementById('strokeColor').value = obj.stroke;
+    }
+  }
+}
+
+function clearPropsPanel() {}
+
+function updateLayers() {
+  const list = document.getElementById('layersList');
+  const objects = canvas.getObjects().slice().reverse();
+
+  list.innerHTML = objects.map((obj, i) => {
+    const name = obj.type === 'i-text' || obj.type === 'text' ? 'Texto' :
+                 obj.type === 'image' ? 'Imagem' :
+                 obj.type === 'rect' ? 'Retângulo' :
+                 obj.type === 'circle' ? 'Círculo' :
+                 obj.type === 'triangle' ? 'Triângulo' :
+                 obj.type === 'line' ? 'Linha' : 'Objeto';
+    const isSelected = canvas.getActiveObject() === obj;
+    return `
+      <div class="layer-item ${isSelected ? 'selected' : ''}" onclick="selectObject(${objects.length - 1 - i})">
+        <span class="layer-icon">${obj.type === 'i-text' || obj.type === 'text' ? 'T' : '⬜'}</span>
+        <span class="layer-name">${name} ${objects.length - i}</span>
+        <div class="layer-actions">
+          <button onclick="event.stopPropagation();duplicateObject(${objects.length - 1 - i})">📋</button>
+          <button onclick="event.stopPropagation();deleteObject(${objects.length - 1 - i})">🗑️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  canvas.on('selection:created', () => updateLayers());
+  canvas.on('selection:updated', () => updateLayers());
+  canvas.on('selection:cleared', () => updateLayers());
+}
+
+function selectObject(index) {
+  const objects = canvas.getObjects();
+  canvas.setActiveObject(objects[index]);
+  canvas.renderAll();
+  updateLayers();
+}
+
+function duplicateObject(index) {
+  const obj = canvas.getActiveObject();
+  if (obj) {
+    obj.clone(function(cloned) {
+      cloned.set({ left: cloned.left + 20, top: cloned.top + 20 });
+      canvas.add(cloned);
+      canvas.setActiveObject(cloned);
+      canvas.renderAll();
+    });
+  }
+}
+
+function deleteObject(index) {
+  const obj = canvas.getActiveObject();
+  if (obj) {
+    canvas.remove(obj);
+    canvas.renderAll();
+  }
+}
+
+function saveState() {
+  const json = JSON.stringify(canvas.toJSON());
+  if (historyIndex < history.length - 1) {
+    history = history.slice(0, historyIndex + 1);
+  }
+  history.push(json);
+  historyIndex = history.length - 1;
+  if (history.length > 50) {
+    history.shift();
+    historyIndex--;
+  }
+  updateLayers();
+}
+
+function undo() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    canvas.loadFromJSON(history[historyIndex], function() {
+      canvas.renderAll();
+      updateLayers();
+    });
+  }
+}
+
+function redo() {
+  if (historyIndex < history.length - 1) {
+    historyIndex++;
+    canvas.loadFromJSON(history[historyIndex], function() {
+      canvas.renderAll();
+      updateLayers();
+    });
+  }
+}
+
+function zoomIn() {
+  zoom = Math.min(zoom + 0.1, 3);
+  document.querySelector('.canvas-wrapper').style.transform = `scale(${zoom})`;
+  document.getElementById('zoomLevel').textContent = Math.round(zoom * 100) + '%';
+}
+
+function zoomOut() {
+  zoom = Math.max(zoom - 0.1, 0.25);
+  document.querySelector('.canvas-wrapper').style.transform = `scale(${zoom})`;
+  document.getElementById('zoomLevel').textContent = Math.round(zoom * 100) + '%';
+}
+
+function zoomFit() {
+  zoom = 1;
+  document.querySelector('.canvas-wrapper').style.transform = 'scale(1)';
+  document.getElementById('zoomLevel').textContent = '100%';
+}
+
+function applyTemplate(template) {
+  const t = templates[template];
+  if (t) {
+    if (confirm(`Mudar para ${template} (${t.width}x${t.height})? O canvas atual será limpo.`)) {
+      canvasWidth = t.width;
+      canvasHeight = t.height;
+      canvas.setWidth(canvasWidth);
+      canvas.setHeight(canvasHeight);
+      canvas.clear();
+      canvas.backgroundColor = '#ffffff';
+      saveState();
+      showAlert('Template aplicado!');
+    }
+  }
+}
+
+function selectFormat(format) {
+  selectedFormat = format;
+  document.querySelectorAll('.export-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.querySelector('input').value === format);
+  });
+}
+
+function showExportModal() {
+  document.getElementById('exportModal').classList.add('active');
+}
+
+function hideExportModal() {
+  document.getElementById('exportModal').classList.remove('active');
+}
+
+function exportDesign() {
+  const dataUrl = canvas.toDataURL({
+    format: selectedFormat,
+    quality: 1,
+    multiplier: 1
+  });
+
+  const link = document.createElement('a');
+  link.download = `design-${Date.now()}.${selectedFormat}`;
+  link.href = dataUrl;
+  link.click();
+
+  hideExportModal();
+  showAlert('Design exportado!');
+}
+
+function showAlert(msg) {
+  const alert = document.createElement('div');
+  alert.className = 'alert';
+  alert.textContent = msg;
+  document.body.appendChild(alert);
+  setTimeout(() => alert.remove(), 3000);
+}
+
+// Inicializar
+initCanvas();
+
+// Atalho de teclado
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    const obj = canvas.getActiveObject();
+    if (obj && !obj.isEditing) {
+      canvas.remove(obj);
+      canvas.renderAll();
+    }
+  }
+  if (e.ctrlKey && e.key === 'z') {
+    e.preventDefault();
+    undo();
+  }
+  if (e.ctrlKey && e.key === 'y') {
+    e.preventDefault();
+    redo();
+  }
+});
+</script>
+</body>
+</html>

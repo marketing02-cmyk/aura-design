@@ -1,0 +1,13 @@
+# Proteger arquivos sensíveis (contêm API keys)
+support.js
+.env
+.env.local
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db

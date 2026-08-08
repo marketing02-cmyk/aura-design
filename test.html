@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Aura Teste</title>
+<style>
+body{font-family:Arial,sans-serif;padding:40px;background:#f5f5f5}
+button{padding:12px 24px;margin:5px;font-size:16px;cursor:pointer;background:#7c3aed;color:#fff;border:none;border-radius:8px}
+button:hover{background:#6d28d9}
+#output{padding:20px;margin-top:20px;background:#fff;border-radius:8px;min-height:50px}
+.active{background:#5b21b6!important}
+</style>
+</head>
+<body>
+<h1>🧪 Teste de Cliques</h1>
+<p>Clique nos botões para testar:</p>
+
+<button onclick="testClick(this)">💬 Chat</button>
+<button onclick="testClick(this)">🖼️ Imagens</button>
+<button onclick="testClick(this)">🎨 Design</button>
+
+<button onclick="sendTest()">📤 Enviar Mensagem</button>
+
+<div id="output"></div>
+
+<script>
+function testClick(btn){
+  // Remove active de todos
+  document.querySelectorAll('button').forEach(function(b){b.classList.remove('active')});
+  // Adiciona active ao clicado
+  btn.classList.add('active');
+  document.getElementById('output').innerHTML = '✅ Botão "' + btn.textContent + '" funcionou!';
+}
+
+function sendTest(){
+  var msg = document.getElementById('msg-test').value;
+  document.getElementById('output').innerHTML = '📤 Mensagem enviada: ' + msg;
+}
+</script>
+
+<p style="margin-top:30px">Ou teste aqui:</p>
+<input type="text" id="msg-test" placeholder="Digite algo..." style="padding:10px;font-size:16px;width:300px">
+<button onclick="sendTest()">Enviar</button>
+
+<p style="margin-top:30px;color:#888">
+Se os botões acima NÃO funcionam quando clicados, o problema pode ser:<br>
+1. Extensão do navegador bloqueando scripts<br>
+2. JavaScript desabilitado<br>
+3. Problema no navegador
+</p>
+</body>
+</html>

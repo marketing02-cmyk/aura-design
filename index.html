@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Aura - Chat + Imagens + Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Outfit,sans-serif;background:#f0f0f5;min-height:100vh}
+header{display:flex;align-items:center;gap:12px;padding:14px 24px;background:#fff;border-bottom:1px solid #e0e0e8}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px}
+h1{font-size:20px;font-weight:600}
+.tabs{display:flex;gap:4px;margin-left:auto;background:#f5f5fa;padding:4px;border-radius:10px}
+.tab{padding:10px 20px;border:none;border-radius:8px;background:transparent;color:#555;font-size:14px;cursor:pointer;font-family:Outfit;font-weight:500;transition:all .2s}
+.tab.active{background:#7c3aed;color:#fff}
+.tab:hover:not(.active){background:#e8e8f0}
+.view{display:none;flex:1}
+.view.active{display:flex;flex-direction:column}
+
+/* Chat */
+.chat-col{max-width:720px;width:100%;margin:0 auto;padding:24px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.msg{padding:14px 18px;border-radius:18px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.msg.user{align-self:flex-end;max-width:75%;background:#ede9fe;border:1px solid #ddd2fb;border-radius:18px 18px 4px 18px}
+.msg.ai{display:flex;gap:12px;max-width:85%}
+.msg.ai .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);flex-shrink:0}
+.msg.ai .text{line-height:1.6;padding-top:6px}
+#dots{display:none;gap:4px;align-items:center;padding:14px 0}
+#dots span{width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:typing 1.2s infinite}
+#dots span:nth-child(2){animation-delay:.2s}
+#dots span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chat-footer{padding:16px 24px;background:#fff;border-top:1px solid #e0e0e8}
+.chat-box{max-width:720px;margin:0 auto;background:#fff;border:1px solid #e3e0ea;border-radius:15px;box-shadow:0 4px 20px rgba(32,29,38,.06);padding:12px 16px;display:flex;align-items:flex-end;gap:10px}
+.chat-box textarea{flex:1;border:none;outline:none;resize:none;font:15px/1.5 Outfit,sans-serif;min-height:24px;max-height:120px;background:transparent;padding:8px 0}
+.chat-box button{width:44px;height:44px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
+.chat-box button:hover{background:#6d28d9}
+.hint{max-width:720px;margin:8px auto 0;text-align:center;font-size:12px;color:#888}
+
+/* Images */
+.image-col{max-width:720px;width:100%;margin:0 auto;padding:24px}
+.prompt-card{background:#fff;border:1px solid #e3e0ea;border-radius:16px;padding:24px;margin-bottom:20px}
+.prompt-card h3{margin:0 0 12px;font-size:16px;font-weight:600}
+.prompt-card textarea{width:100%;border:1px solid #e3e0ea;border-radius:10px;padding:12px;font-size:14px;resize:vertical;min-height:100px;font-family:Outfit;outline:none}
+.prompt-card textarea:focus{border-color:#7c3aed}
+.size-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.size-row label{padding:10px 16px;background:#f5f0ff;border-radius:8px;cursor:pointer;font-size:13px;border:2px solid transparent;transition:all .2s;display:block}
+.size-row label:hover{border-color:#7c3aed}
+.size-row input{display:none}
+.size-row input:checked + span{color:#7c3aed;font-weight:600}
+.gen-btn{width:100%;padding:14px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Outfit;margin-top:12px}
+.gen-btn:hover{background:#6d28d9}
+.gen-btn:disabled{background:#ccc;cursor:not-allowed}
+.images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.img-card{background:#fff;border:1px solid #e3e0ea;border-radius:12px;overflow:hidden}
+.img-card img{width:100%;height:200px;object-fit:cover}
+.img-card .actions{padding:12px;display:flex;gap:8px}
+.img-card button{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:Outfit;font-weight:500}
+.btn-download{background:#7c3aed;color:#fff}
+.btn-open{background:#f5f0ff;color:#7c3aed}
+.loading{text-align:center;padding:60px;color:#888}
+.spinner{width:48px;height:48px;border:3px solid #e0e0e8;border-top-color:#7c3aed;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:80px 20px;color:#888;font-size:64px}
+
+/* Design */
+.design-wrap{flex:1;display:flex;overflow:hidden}
+.side{width:260px;background:#fff;border-right:1px solid #e0e0e8;overflow-y:auto}
+.side-section{padding:16px;border-bottom:1px solid #f0f0f5}
+.side-section h3{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:0 0 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tpl-btn{aspect-ratio:1;background:#f5f5fa;border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;transition:all .2s}
+.tpl-btn:hover{border-color:#7c3aed;transform:scale(1.03)}
+.tpl-btn span{font-size:10px;color:#888;margin-top:4px}
+.up-btn{width:100%;padding:12px;border:2px dashed #d0d0e0;border-radius:8px;background:#fafafa;cursor:pointer;font-size:13px;color:#666;margin-bottom:8px;transition:all .2s;display:block;text-align:center}
+.up-btn:hover{border-color:#7c3aed;background:#f5f0ff}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.row label{font-size:13px;color:#444;min-width:50px}
+.row input[type="color"]{width:40px;height:32px;border:1px solid #e0e0e8;border-radius:6px;cursor:pointer;padding:2px}
+.row input[type="number"],.row select{flex:1;padding:8px 10px;border:1px solid #e0e0e8;border-radius:6px;font-size:13px;font-family:Inter}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.btns button{width:calc(50% - 3px);padding:10px;border:1px solid #e0e0e8;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;transition:all .2s}
+.btns button:hover{background:#f5f0ff;border-color:#7c3aed}
+.layers{flex:1;overflow-y:auto}
+.layer{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f8fc;border-radius:8px;margin-bottom:6px;cursor:pointer}
+.layer:hover{background:#f0f0fa}
+.layer.selected{background:#ede9fe}
+.layer-icon{font-size:16px}
+.layer-name{flex:1;font-size:13px}
+.layer-del{border:none;background:transparent;cursor:pointer;font-size:14px;opacity:0}
+.layer:hover .layer-del{opacity:1}
+.canvas-area{flex:1;display:flex;align-items:center;justify-content:center;background:#d9d9e3;overflow:auto;padding:40px}
+.canvas-wrap{box-shadow:0 10px 40px rgba(0,0,0,.15)}
+.toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 16px;border-radius:30px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;align-items:center;gap:4px}
+.toolbar button{border:none;background:transparent;cursor:pointer;font-size:14px;padding:8px;border-radius:6px}
+.toolbar button:hover{background:#f0f0f0}
+.toolbar .sep{width:1px;height:20px;background:#e0e0e8}
+.export-btn{background:#7c3aed!important;color:#fff!important;padding:8px 16px;font-size:13px;font-weight:500}
+.export-btn:hover{background:#6d28d9!important}
+.zoom{font-size:12px;color:#666;min-width:40px;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:16px;padding:28px;width:380px;max-width:90%}
+.modal-box h2{font-size:18px;margin:0 0 20px}
+.opt{border:2px solid #e0e0e8;border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.opt:hover{border-color:#7c3aed}
+.opt.selected{border-color:#7c3aed;background:#f9f5ff}
+.opt .badge{width:44px;height:44px;border-radius:8px;background:#f5f5fa;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.opt h4{margin:0 0 2px;font-size:14px}
+.opt p{margin:0;font-size:12px;color:#888}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions button{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none}
+.cancel{background:#f0f0f5;color:#444}
+.confirm{background:#7c3aed;color:#fff}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;animation:slide .3s ease}
+@keyframes slide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">A</div>
+  <h1>Aura</h1>
+  <div class="tabs">
+    <button class="tab active" id="tab-chat" onclick="switchTab('chat')">💬 Chat</button>
+    <button class="tab" id="tab-image" onclick="switchTab('image')">🖼️ Imagens</button>
+    <button class="tab" id="tab-design" onclick="switchTab('design')">🎨 Design</button>
+  </div>
+</header>
+
+<div id="chat-view" class="view active">
+  <div class="chat-col" id="msg-col">
+    <div class="msg ai">
+      <div class="logo"></div>
+      <div class="text">Olá! Sou o Aura. Como posso ajudar?</div>
+    </div>
+    <div id="dots"><span></span><span></span><span></span></div>
+  </div>
+  <div class="chat-footer">
+    <div class="chat-box">
+      <textarea id="msg-input" placeholder="Escreva sua mensagem..."></textarea>
+      <button onclick="sendMsg()">↑</button>
+    </div>
+    <div class="hint">Enter envia • Shift+Enter quebra linha</div>
+  </div>
+</div>
+
+<div id="image-view" class="view">
+  <div class="image-col">
+    <div class="prompt-card">
+      <h3>✨ Gerar Imagem com IA</h3>
+      <textarea id="prompt-input" placeholder="Descreva a imagem que quer criar..."></textarea>
+      <div class="size-row">
+        <label><input type="radio" name="size" value="1024x1024" checked><span>1024×1024</span></label>
+        <label><input type="radio" name="size" value="1792x1024"><span>1792×1024</span></label>
+        <label><input type="radio" name="size" value="1024x1792"><span>1024×1792</span></label>
+      </div>
+      <button class="gen-btn" id="gen-btn" onclick="generateImg()">✨ Gerar Imagem</button>
+    </div>
+    <div id="images-result">
+      <div class="empty">🖼️</div>
+    </div>
+  </div>
+</div>
+
+<div id="design-view" class="view">
+  <div class="design-wrap">
+    <div class="side">
+      <div class="side-section">
+        <h3>Templates</h3>
+        <div class="grid2">
+          <button class="tpl-btn" onclick="setTemplate(1080,1080)">📸<span>Post</span></button>
+          <button class="tpl-btn" onclick="setTemplate(1080,1920)">📱<span>Story</span></button>
+          <button class="tpl-btn" onclick="setTemplate(1200,630)">📘<span>Facebook</span></button>
+          <button class="tpl-btn" onclick="setTemplate(1600,900)">🐦<span>Twitter</span></button>
+        </div>
+      </div>
+      <div class="side-section">
+        <h3>Background</h3>
+        <button class="up-btn" onclick="document.getElementById('bg-upload').click()">📁 Imagem de Fundo</button>
+        <button class="up-btn" onclick="setDesignBg()">🎨 Cor Sólida</button>
+        <input type="file" id="bg-upload" style="display:none" accept="image/*" onchange="handleBgUpload(event)">
+      </div>
+      <div class="side-section">
+        <h3>Adicionar</h3>
+        <div class="btns">
+          <button onclick="addDesignText()">✏️ Texto</button>
+          <button onclick="addDesignShape('rect')">⬜ Retângulo</button>
+          <button onclick="addDesignShape('circle')">⭕ Círculo</button>
+          <button onclick="addDesignShape('triangle')">🔺 Triângulo</button>
+        </div>
+      </div>
+      <div class="side-section">
+        <h3>Estilo</h3>
+        <div class="row">
+          <label>Cor</label>
+          <input type="color" id="designColor" value="#7c3aed" onchange="updateDesignProp('fill',this.value)">
+        </div>
+        <div class="row">
+          <label>Fonte</label>
+          <select id="designFont" onchange="updateDesignProp('fontFamily',this.value)">
+            <option value="Inter">Inter</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>Tamanho</label>
+          <input type="number" id="designFontSize" value="48" min="8" max="200" onchange="updateDesignProp('fontSize',parseInt(this.value))">
+        </div>
+      </div>
+      <div class="side-section layers">
+        <h3>Camadas</h3>
+        <div id="layersList"></div>
+      </div>
+    </div>
+    <div class="canvas-area">
+      <div class="canvas-wrap">
+        <canvas id="design-canvas" width="1080" height="1080"></canvas>
+      </div>
+      <div class="toolbar">
+        <button onclick="designUndo()" title="Desfazer">↩️</button>
+        <button onclick="designRedo()" title="Refazer">↪️</button>
+        <button onclick="designDelete()" title="Apagar">🗑️</button>
+        <span class="sep"></span>
+        <button onclick="designZoomOut()">−</button>
+        <span class="zoom" id="zoomDisplay">100%</span>
+        <button onclick="designZoomIn()">+</button>
+        <span class="sep"></span>
+        <button class="export-btn" onclick="showDesignExport()">📥 Exportar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="exportModal">
+  <div class="modal-box">
+    <h2>Exportar Design</h2>
+    <div class="opt selected" onclick="selectFormat('png',this)">
+      <div class="badge">PNG</div>
+      <div><h4>PNG</h4><p>Com transparência</p></div>
+    </div>
+    <div class="opt" onclick="selectFormat('jpeg',this)">
+      <div class="badge">JPG</div>
+      <div><h4>JPEG</h4><p>Menor arquivo</p></div>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="hideExport()">Cancelar</button>
+      <button class="confirm" onclick="exportDesign()">Baixar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const CHAT_API = 'https://api.kpalabz.com/v1/messages';
+const CHAT_KEY = 'sk-kpa-5e547f13b6323da4fea5f15fa600db8ce1af20cdc45e3105c05288fe40870d95';
+const CHAT_MODEL = 'claude-sonnet-4-20250514';
+const OPENAI_KEY = 'sk-your-openai-key-here';
+
+// ===== TABS =====
+function switchTab(tab) {
+  var tabs = document.querySelectorAll('.tab');
+  var views = document.querySelectorAll('.view');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  views.forEach(function(v) { v.classList.remove('active'); });
+  document.getElementById(tab + '-view').classList.add('active');
+  if (tab === 'chat') document.getElementById('tab-chat').classList.add('active');
+  if (tab === 'image') document.getElementById('tab-image').classList.add('active');
+  if (tab === 'design') document.getElementById('tab-design').classList.add('active');
+  if (tab === 'design') { initDesign(); }
+}
+
+// ===== CHAT =====
+var msgs = [];
+var dots = document.getElementById('dots');
+var msgCol = document.getElementById('msg-col');
+var msgInput = document.getElementById('msg-input');
+
+function addMsg(role, text) {
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role === 'user') {
+    div.textContent = text;
+  } else {
+    div.innerHTML = '<div class="logo"></div><div class="text">' + text + '</div>';
+  }
+  msgCol.insertBefore(div, dots);
+  msgCol.scrollTop = msgCol.scrollHeight;
+}
+
+function sendMsg() {
+  var v = msgInput.value.trim();
+  if (!v || dots.style.display === 'flex') return;
+  msgs.push({role: 'user', content: v});
+  addMsg('user', v);
+  msgInput.value = '';
+  dots.style.display = 'flex';
+  msgCol.scrollTop = msgCol.scrollHeight;
+
+  fetch('/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({messages: msgs})
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      dots.style.display = 'none';
+      var t = d.reply || 'Erro: ' + (d.error || 'desconhecido');
+      msgs.push({role: 'assistant', content: t});
+      addMsg('ai', t);
+    })
+    .catch(function(e) {
+      dots.style.display = 'none';
+      addMsg('ai', 'Erro: ' + e.message);
+    });
+}
+
+msgInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMsg();
+  }
+});
+
+// ===== IMAGES =====
+var generatedImages = [];
+
+function generateImg() {
+  var prompt = document.getElementById('prompt-input').value.trim();
+  if (!prompt) return;
+  var size = document.querySelector('input[name="size"]:checked').value;
+  var btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = 'Gerando...';
+  document.getElementById('images-result').innerHTML = '<div class="loading"><div class="spinner"></div>Gerando...</div>';
+
+  fetch('/image', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt: prompt, size: size})
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      btn.disabled = false;
+      btn.textContent = '✨ Gerar Imagem';
+      if (d.error) {
+        document.getElementById('images-result').innerHTML = '<div style="color:#b00020;padding:20px">' + d.error + '</div>';
+        return;
+      }
+      generatedImages.unshift({url: d.url, prompt: prompt});
+      renderImages();
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = '✨ Gerar Imagem';
+      document.getElementById('images-result').innerHTML = '<div style="color:#b00020;padding:20px">' + e.message + '</div>';
+    });
+}
+
+function renderImages() {
+  var el = document.getElementById('images-result');
+  if (generatedImages.length === 0) {
+    el.innerHTML = '<div class="empty">🖼️</div>';
+    return;
+  }
+  var html = '<div class="images-grid">';
+  generatedImages.forEach(function(img) {
+    html += '<div class="img-card"><img src="' + img.url + '" alt=""><div class="actions"><button class="btn-download" onclick="downloadImg(\'' + img.url + '\')">Baixar</button><button class="btn-open" onclick="window.open(\'' + img.url + '\')">Abrir</button></div></div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function downloadImg(url) {
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'aura-' + Date.now() + '.png';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ===== DESIGN =====
+var dCanvas = null;
+var dHistory = [];
+var dHistoryIndex = -1;
+var dZoom = 1;
+var dFormat = 'png';
+var dW = 1080;
+var dH = 1080;
+var dInit = false;
+
+function initDesign() {
+  if (dInit) return;
+  dInit = true;
+  dCanvas = new fabric.Canvas('design-canvas', {
+    backgroundColor: '#ffffff',
+    selection: true
+  });
+  dCanvas.on('selection:created', updateLayers);
+  dCanvas.on('selection:updated', updateLayers);
+  dCanvas.on('selection:cleared', updateLayers);
+  dCanvas.on('object:added', saveState);
+  dCanvas.on('object:modified', saveState);
+  saveState();
+  updateLayers();
+}
+
+function setTemplate(w, h) {
+  dW = w;
+  dH = h;
+  dCanvas.setWidth(w);
+  dCanvas.setHeight(h);
+  dCanvas.clear();
+  dCanvas.backgroundColor = '#ffffff';
+  saveState();
+  updateLayers();
+}
+
+function addDesignText() {
+  var text = new fabric.IText('Texto', {
+    left: dW / 2,
+    top: dH / 2,
+    fontSize: 48,
+    fontFamily: 'Inter',
+    fill: document.getElementById('designColor').value,
+    originX: 'center',
+    originY: 'center'
+  });
+  dCanvas.add(text);
+  dCanvas.setActiveObject(text);
+  text.enterEditing();
+  text.selectAll();
+  dCanvas.renderAll();
+}
+
+function addDesignShape(type) {
+  var color = document.getElementById('designColor').value;
+  var props = {left: dW / 2, top: dH / 2, fill: color, originX: 'center', originY: 'center'};
+  var shape = null;
+  if (type === 'rect') {
+    shape = new fabric.Rect({width: 200, height: 150});
+  } else if (type === 'circle') {
+    shape = new fabric.Circle({radius: 100});
+  } else if (type === 'triangle') {
+    shape = new fabric.Triangle({width: 180, height: 150});
+  }
+  if (shape) {
+    shape.set(props);
+    dCanvas.add(shape);
+    dCanvas.setActiveObject(shape);
+    dCanvas.renderAll();
+  }
+}
+
+function updateDesignProp(prop, val) {
+  var obj = dCanvas.getActiveObject();
+  if (obj) {
+    obj.set(prop, val);
+    dCanvas.renderAll();
+    saveState();
+  }
+}
+
+function handleBgUpload(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(f) {
+    fabric.Image.fromURL(f.target.result, function(img) {
+      img.set({width: dW, height: dH, left: 0, top: 0, selectable: false, evented: false});
+      dCanvas.backgroundImage = img;
+      dCanvas.renderAll();
+      saveState();
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function setDesignBg() {
+  var color = prompt('Cor hex:', '#7c3aed');
+  if (color) {
+    dCanvas.backgroundColor = color;
+    dCanvas.backgroundImage = null;
+    dCanvas.renderAll();
+    saveState();
+  }
+}
+
+function updateLayers() {
+  var list = document.getElementById('layersList');
+  var objs = dCanvas.getObjects().slice().reverse();
+  list.innerHTML = objs.map(function(obj, i) {
+    var name = obj.type === 'i-text' ? 'Texto' : 'Objeto';
+    var sel = dCanvas.getActiveObject() === obj;
+    return '<div class="layer' + (sel ? ' selected' : '') + '" onclick="selectLayer(' + (objs.length - 1 - i) + ')"><span class="layer-icon">✏️</span><span class="layer-name">' + name + '</span><button class="layer-del" onclick="event.stopPropagation();delLayer(' + (objs.length - 1 - i) + ')">🗑️</button></div>';
+  }).join('');
+}
+
+function selectLayer(i) {
+  var objs = dCanvas.getObjects();
+  dCanvas.setActiveObject(objs[i]);
+  dCanvas.renderAll();
+}
+
+function delLayer(i) {
+  var objs = dCanvas.getObjects();
+  dCanvas.remove(objs[i]);
+  dCanvas.renderAll();
+}
+
+function designDelete() {
+  var obj = dCanvas.getActiveObject();
+  if (obj) {
+    dCanvas.remove(obj);
+    dCanvas.renderAll();
+  }
+}
+
+function saveState() {
+  var json = JSON.stringify(dCanvas.toJSON());
+  if (dHistoryIndex < dHistory.length - 1) {
+    dHistory = dHistory.slice(0, dHistoryIndex + 1);
+  }
+  dHistory.push(json);
+  dHistoryIndex = dHistory.length - 1;
+  if (dHistory.length > 50) {
+    dHistory.shift();
+    dHistoryIndex--;
+  }
+  updateLayers();
+}
+
+function designUndo() {
+  if (dHistoryIndex > 0) {
+    dHistoryIndex--;
+    dCanvas.loadFromJSON(dHistory[dHistoryIndex], function() {
+      dCanvas.renderAll();
+      updateLayers();
+    });
+  }
+}
+
+function designRedo() {
+  if (dHistoryIndex < dHistory.length - 1) {
+    dHistoryIndex++;
+    dCanvas.loadFromJSON(dHistory[dHistoryIndex], function() {
+      dCanvas.renderAll();
+      updateLayers();
+    });
+  }
+}
+
+function designZoomIn() {
+  dZoom = Math.min(dZoom + 0.1, 3);
+  document.querySelector('.canvas-wrap').style.transform = 'scale(' + dZoom + ')';
+  document.getElementById('zoomDisplay').textContent = Math.round(dZoom * 100) + '%';
+}
+
+function designZoomOut() {
+  dZoom = Math.max(dZoom - 0.1, 0.25);
+  document.querySelector('.canvas-wrap').style.transform = 'scale(' + dZoom + ')';
+  document.getElementById('zoomDisplay').textContent = Math.round(dZoom * 100) + '%';
+}
+
+function selectFormat(f, el) {
+  dFormat = f;
+  document.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function showDesignExport() {
+  document.getElementById('exportModal').classList.add('active');
+}
+
+function hideExport() {
+  document.getElementById('exportModal').classList.remove('active');
+}
+
+function exportDesign() {
+  var dataUrl = dCanvas.toDataURL({format: dFormat, quality: 1});
+  var a = document.createElement('a');
+  a.download = 'design-' + Date.now() + '.' + dFormat;
+  a.href = dataUrl;
+  a.click();
+  hideExport();
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = 'Exportado!';
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3000);
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.key === 'Delete' || e.key === 'Backspace') && document.getElementById('design-view').classList.contains('active')) {
+    var obj = dCanvas.getActiveObject();
+    if (obj && !obj.isEditing) {
+      dCanvas.remove(obj);
+      dCanvas.renderAll();
+    }
+  }
+  if (e.ctrlKey && e.key === 'z' && document.getElementById('design-view').classList.contains('active')) {
+    e.preventDefault();
+    designUndo();
+  }
+  if (e.ctrlKey && e.key === 'y' && document.getElementById('design-view').classList.contains('active')) {
+    e.preventDefault();
+    designRedo();
+  }
+});
+</script>
+</body>
+</html>
