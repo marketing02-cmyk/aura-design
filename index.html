@@ -7,113 +7,155 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Outfit,sans-serif;background:#f0f0f5;min-height:100vh}
-header{display:flex;align-items:center;gap:12px;padding:14px 24px;background:#fff;border-bottom:1px solid #e0e0e8}
-.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px}
-h1{font-size:20px;font-weight:600}
-.tabs{display:flex;gap:4px;margin-left:auto;background:#f5f5fa;padding:4px;border-radius:10px}
-.tab{padding:10px 20px;border:none;border-radius:8px;background:transparent;color:#555;font-size:14px;cursor:pointer;font-family:Outfit;font-weight:500;transition:all .2s}
-.tab.active{background:#7c3aed;color:#fff}
+body{font-family:Outfit,sans-serif;background:#f0f0f5;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:10px 20px;background:#fff;border-bottom:1px solid #e0e0e8;flex-shrink:0}
+.logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#fcd34d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+h1{font-size:18px;font-weight:600}
+.tabs{display:flex;gap:4px;margin-left:auto;background:#f5f5fa;padding:3px;border-radius:8px}
+.tab{padding:8px 16px;border:none;border-radius:6px;background:transparent;color:#555;font-size:13px;cursor:pointer;font-family:Outfit;font-weight:500;transition:all .2s}
+.tab.active{background:#f59e0b;color:#fff}
 .tab:hover:not(.active){background:#e8e8f0}
-.view{display:none;flex:1}
+.view{display:none;flex:1;overflow:hidden}
 .view.active{display:flex;flex-direction:column}
 
 /* Chat */
-.chat-col{max-width:720px;width:100%;margin:0 auto;padding:24px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
-.msg{padding:14px 18px;border-radius:18px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
-.msg.user{align-self:flex-end;max-width:75%;background:#ede9fe;border:1px solid #ddd2fb;border-radius:18px 18px 4px 18px}
-.msg.ai{display:flex;gap:12px;max-width:85%}
-.msg.ai .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#a855f7);flex-shrink:0}
-.msg.ai .text{line-height:1.6;padding-top:6px}
-#dots{display:none;gap:4px;align-items:center;padding:14px 0}
-#dots span{width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:typing 1.2s infinite}
+.chat-col{max-width:720px;width:100%;margin:0 auto;padding:20px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.msg{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.msg.user{align-self:flex-end;max-width:75%;background:#fef3c7;border:1px solid #fde68a;border-radius:16px 16px 4px 16px}
+.msg.ai{display:flex;gap:10px;max-width:85%}
+.msg.ai .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#f59e0b,#fcd34d);flex-shrink:0}
+.msg.ai .text{line-height:1.5;padding-top:4px}
+#dots{display:none;gap:4px;align-items:center;padding:12px 0}
+#dots span{width:7px;height:7px;border-radius:50%;background:#f59e0b;animation:typing 1.2s infinite}
 #dots span:nth-child(2){animation-delay:.2s}
 #dots span:nth-child(3){animation-delay:.4s}
 @keyframes typing{0%,80%,100%{opacity:.25}40%{opacity:1}}
-.chat-footer{padding:16px 24px;background:#fff;border-top:1px solid #e0e0e8}
-.chat-box{max-width:720px;margin:0 auto;background:#fff;border:1px solid #e3e0ea;border-radius:15px;box-shadow:0 4px 20px rgba(32,29,38,.06);padding:12px 16px;display:flex;align-items:flex-end;gap:10px}
-.chat-box textarea{flex:1;border:none;outline:none;resize:none;font:15px/1.5 Outfit,sans-serif;min-height:24px;max-height:120px;background:transparent;padding:8px 0}
-.chat-box button{width:44px;height:44px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
-.chat-box button:hover{background:#6d28d9}
-.hint{max-width:720px;margin:8px auto 0;text-align:center;font-size:12px;color:#888}
+.chat-footer{padding:12px 20px;background:#fff;border-top:1px solid #e0e0e8}
+.chat-box{max-width:720px;margin:0 auto;background:#fff;border:1px solid #e3e0ea;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);padding:10px 14px;display:flex;align-items:flex-end;gap:8px}
+.chat-box textarea{flex:1;border:none;outline:none;resize:none;font:14px/1.5 Outfit,sans-serif;min-height:22px;max-height:100px;background:transparent;padding:6px 0}
+.chat-box button{width:40px;height:40px;border:none;border-radius:8px;background:#f59e0b;color:#fff;font-size:16px;cursor:pointer}
+.chat-box button:hover{background:#d97706}
+.hint{max-width:720px;margin:6px auto 0;text-align:center;font-size:11px;color:#888}
 
 /* Images */
-.image-col{max-width:720px;width:100%;margin:0 auto;padding:24px}
-.prompt-card{background:#fff;border:1px solid #e3e0ea;border-radius:16px;padding:24px;margin-bottom:20px}
-.prompt-card h3{margin:0 0 12px;font-size:16px;font-weight:600}
-.prompt-card textarea{width:100%;border:1px solid #e3e0ea;border-radius:10px;padding:12px;font-size:14px;resize:vertical;min-height:100px;font-family:Outfit;outline:none}
-.prompt-card textarea:focus{border-color:#7c3aed}
-.size-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
-.size-row label{padding:10px 16px;background:#f5f0ff;border-radius:8px;cursor:pointer;font-size:13px;border:2px solid transparent;transition:all .2s;display:block}
-.size-row label:hover{border-color:#7c3aed}
+.image-col{max-width:720px;width:100%;margin:0 auto;padding:20px;overflow-y:auto}
+.prompt-card{background:#fff;border:1px solid #e3e0ea;border-radius:14px;padding:20px;margin-bottom:16px}
+.prompt-card h3{margin:0 0 10px;font-size:15px;font-weight:600}
+.prompt-card textarea{width:100%;border:1px solid #e3e0ea;border-radius:8px;padding:10px;font-size:13px;resize:vertical;min-height:80px;font-family:Outfit;outline:none}
+.prompt-card textarea:focus{border-color:#f59e0b}
+.size-row{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.size-row label{padding:8px 14px;background:#fef9c3;border-radius:6px;cursor:pointer;font-size:12px;border:2px solid transparent;transition:all .2s;display:block}
+.size-row label:hover{border-color:#f59e0b}
 .size-row input{display:none}
-.size-row input:checked + span{color:#7c3aed;font-weight:600}
-.gen-btn{width:100%;padding:14px;border:none;border-radius:10px;background:#7c3aed;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Outfit;margin-top:12px}
-.gen-btn:hover{background:#6d28d9}
+.size-row input:checked + span{color:#d97706;font-weight:600}
+.gen-btn{width:100%;padding:12px;border:none;border-radius:8px;background:#f59e0b;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:Outfit;margin-top:10px}
+.gen-btn:hover{background:#d97706}
 .gen-btn:disabled{background:#ccc;cursor:not-allowed}
-.images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
-.img-card{background:#fff;border:1px solid #e3e0ea;border-radius:12px;overflow:hidden}
-.img-card img{width:100%;height:200px;object-fit:cover}
-.img-card .actions{padding:12px;display:flex;gap:8px}
-.img-card button{flex:1;padding:10px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:Outfit;font-weight:500}
-.btn-download{background:#7c3aed;color:#fff}
-.btn-open{background:#f5f0ff;color:#7c3aed}
-.loading{text-align:center;padding:60px;color:#888}
-.spinner{width:48px;height:48px;border:3px solid #e0e0e8;border-top-color:#7c3aed;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+.images-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px}
+.img-card{background:#fff;border:1px solid #e3e0ea;border-radius:10px;overflow:hidden}
+.img-card img{width:100%;height:180px;object-fit:cover}
+.img-card .actions{padding:10px;display:flex;gap:6px}
+.img-card button{flex:1;padding:8px;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:Outfit;font-weight:500}
+.btn-download{background:#f59e0b;color:#fff}
+.btn-open{background:#fef9c3;color:#d97706}
+.loading{text-align:center;padding:50px;color:#888}
+.spinner{width:40px;height:40px;border:3px solid #e0e0e8;border-top-color:#f59e0b;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:80px 20px;color:#888;font-size:64px}
+.empty{text-align:center;padding:60px 20px;color:#888;font-size:56px}
 
 /* Design */
-.design-wrap{flex:1;display:flex;overflow:hidden}
-.side{width:260px;background:#fff;border-right:1px solid #e0e0e8;overflow-y:auto}
-.side-section{padding:16px;border-bottom:1px solid #f0f0f5}
-.side-section h3{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin:0 0 12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tpl-btn{aspect-ratio:1;background:#f5f5fa;border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;transition:all .2s}
-.tpl-btn:hover{border-color:#7c3aed;transform:scale(1.03)}
-.tpl-btn span{font-size:10px;color:#888;margin-top:4px}
-.up-btn{width:100%;padding:12px;border:2px dashed #d0d0e0;border-radius:8px;background:#fafafa;cursor:pointer;font-size:13px;color:#666;margin-bottom:8px;transition:all .2s;display:block;text-align:center}
-.up-btn:hover{border-color:#7c3aed;background:#f5f0ff}
-.row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.row label{font-size:13px;color:#444;min-width:50px}
-.row input[type="color"]{width:40px;height:32px;border:1px solid #e0e0e8;border-radius:6px;cursor:pointer;padding:2px}
-.row input[type="number"],.row select{flex:1;padding:8px 10px;border:1px solid #e0e0e8;border-radius:6px;font-size:13px;font-family:Inter}
-.btns{display:flex;flex-wrap:wrap;gap:6px}
-.btns button{width:calc(50% - 3px);padding:10px;border:1px solid #e0e0e8;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;transition:all .2s}
-.btns button:hover{background:#f5f0ff;border-color:#7c3aed}
-.layers{flex:1;overflow-y:auto}
-.layer{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f8fc;border-radius:8px;margin-bottom:6px;cursor:pointer}
-.layer:hover{background:#f0f0fa}
-.layer.selected{background:#ede9fe}
-.layer-icon{font-size:16px}
-.layer-name{flex:1;font-size:13px}
-.layer-del{border:none;background:transparent;cursor:pointer;font-size:14px;opacity:0}
-.layer:hover .layer-del{opacity:1}
-.canvas-area{flex:1;display:flex;align-items:center;justify-content:center;background:#d9d9e3;overflow:auto;padding:40px}
-.canvas-wrap{box-shadow:0 10px 40px rgba(0,0,0,.15)}
-.toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;padding:8px 16px;border-radius:30px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;align-items:center;gap:4px}
-.toolbar button{border:none;background:transparent;cursor:pointer;font-size:14px;padding:8px;border-radius:6px}
-.toolbar button:hover{background:#f0f0f0}
-.toolbar .sep{width:1px;height:20px;background:#e0e0e8}
-.export-btn{background:#7c3aed!important;color:#fff!important;padding:8px 16px;font-size:13px;font-weight:500}
-.export-btn:hover{background:#6d28d9!important}
-.zoom{font-size:12px;color:#666;min-width:40px;text-align:center}
+.design-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.design-subtabs{display:flex;gap:2px;padding:10px 16px;background:#fafafa;border-bottom:1px solid #e0e0e8}
+.sub-tab{padding:8px 20px;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;color:#666;background:transparent}
+.sub-tab.active{background:#fff;color:#d97706;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sub-tab:hover:not(.active){background:#f0f0f5;color:#333}
+.design-panels{flex:1;display:flex;overflow:hidden}
+
+/* Edit Panel */
+.edit-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.edit-toolbar{display:flex;align-items:center;gap:6px;padding:8px 16px;background:#fff;border-bottom:1px solid #e0e0e8;flex-wrap:wrap}
+.toolbar-group{display:flex;align-items:center;gap:4px;padding-right:10px;border-right:1px solid #e8e8ec;margin-right:4px}
+.toolbar-group:last-child{border-right:none;margin-right:0}
+.tool-btn{width:34px;height:34px;border:1px solid #e0e0e8;border-radius:6px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#444;transition:all .15s}
+.tool-btn:hover{border-color:#f59e0b;color:#f59e0b;background:#fffbf0}
+.tool-btn.active{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.tool-btn:disabled{opacity:0.4;cursor:not-allowed}
+.toolbar-divider{width:1px;height:20px;background:#e0e0e8;margin:0 6px}
+.toolbar-input{width:56px;padding:6px 8px;border:1px solid #e0e0e8;border-radius:6px;font-size:12px;text-align:center}
+.toolbar-input:focus{border-color:#f59e0b;outline:none}
+.toolbar-color{width:34px;height:34px;border:1px solid #e0e0e8;border-radius:6px;cursor:pointer;padding:2px;background:#fff}
+.toolbar-color:hover{border-color:#f59e0b}
+.toolbar-select{padding:7px 10px;border:1px solid #e0e0e8;border-radius:6px;font-size:12px;background:#fff;cursor:pointer}
+.toolbar-select:focus{border-color:#f59e0b;outline:none}
+.toolbar-spacer{flex:1}
+.toolbar-label{font-size:11px;color:#888;margin-right:4px}
+.zoom-controls{display:flex;align-items:center;gap:2px;background:#f5f5f8;padding:4px 8px;border-radius:6px}
+.zoom-btn{width:26px;height:26px;border:1px solid #e0e0e8;border-radius:4px;background:#fff;cursor:pointer;font-size:13px}
+.zoom-btn:hover{border-color:#f59e0b}
+.zoom-label{font-size:12px;color:#666;min-width:38px;text-align:center;font-weight:500}
+.export-btn{padding:8px 18px;border:none;border-radius:6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 2px 8px rgba(245,158,11,.3)}
+.export-btn:hover{background:linear-gradient(135deg,#d97706,#ea580c)}
+
+/* Canvas Area */
+.canvas-container{flex:1;display:flex;overflow:hidden}
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#d9d9e3;overflow:auto;padding:20px}
+.canvas-inner{box-shadow:0 10px 40px rgba(0,0,0,.15);transform-origin:center}
+.zoom-controls{display:flex;align-items:center;gap:4px;padding:0 12px}
+.zoom-btn{width:28px;height:28px;border:1px solid #e0e0e8;border-radius:4px;background:#fff;cursor:pointer;font-size:14px}
+.zoom-btn:hover{border-color:#f59e0b}
+.zoom-label{font-size:12px;color:#666;min-width:40px;text-align:center}
+.layers-panel{width:200px;background:#fff;border-left:1px solid #e0e0e8;overflow-y:auto}
+.layers-header{padding:10px 12px;border-bottom:1px solid #f0f0f5;font-size:11px;font-weight:600;color:#888;text-transform:uppercase}
+.layer-item{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:all .15s}
+.layer-item:hover{background:#f5f5fa}
+.layer-item.selected{background:#fef3c7}
+.layer-icon{font-size:14px}
+.layer-name{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer-del{border:none;background:transparent;cursor:pointer;font-size:12px;opacity:0}
+.layer-item:hover .layer-del{opacity:1}
+
+/* AI Panel */
+.ai-panel{flex:1;display:flex;overflow:hidden}
+.ai-chat{width:320px;background:#fff;border-right:1px solid #e0e0e8;display:flex;flex-direction:column;flex-shrink:0}
+.ai-msgs{flex:1;overflow-y:auto;padding:12px}
+.ai-msg{padding:8px 12px;border-radius:10px;font-size:13px;line-height:1.5;margin-bottom:6px;max-width:92%}
+.ai-msg.user{background:#fef3c7;align-self:flex-end;border-bottom-right-radius:4px}
+.ai-msg.ai{background:#f5f5fa;align-self:flex-start;border-bottom-left-radius:4px}
+.ai-msg.error{background:#fee2e2;color:#b00020}
+.ai-load{display:flex;gap:4px;padding:8px 12px;background:#f5f5fa;border-radius:10px;align-self:flex-start;margin-bottom:6px}
+.ai-load span{width:5px;height:5px;border-radius:50%;background:#f59e0b;animation:typing 1.2s infinite}
+.ai-load span:nth-child(2){animation-delay:.2s}
+.ai-load span:nth-child(3){animation-delay:.4s}
+.ai-quick{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 10px}
+.ai-quick button{padding:5px 10px;background:#fef9c3;border:1px solid #e0e0e8;border-radius:12px;font-size:11px;cursor:pointer;transition:all .2s}
+.ai-quick button:hover{border-color:#f59e0b}
+.ai-input{display:flex;gap:6px;padding:12px;border-top:1px solid #f0f0f5}
+.ai-input input{flex:1;padding:10px 14px;border:1px solid #e0e0e8;border-radius:20px;font-size:13px;outline:none}
+.ai-input input:focus{border-color:#f59e0b}
+.ai-input button{width:36px;height:36px;border:none;border-radius:50%;background:#f59e0b;color:#fff;cursor:pointer;font-size:16px}
+.ai-input button:hover{background:#d97706}
+.ai-canvas{flex:1;display:flex;flex-direction:column;background:#d9d9e3}
+.ai-canvas-header{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;background:#fff;border-bottom:1px solid #e0e0e8}
+.ai-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:20px}
+.ai-canvas-inner{box-shadow:0 10px 40px rgba(0,0,0,.15)}
+
+/* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000}
 .modal.active{display:flex}
-.modal-box{background:#fff;border-radius:16px;padding:28px;width:380px;max-width:90%}
-.modal-box h2{font-size:18px;margin:0 0 20px}
-.opt{border:2px solid #e0e0e8;border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.opt:hover{border-color:#7c3aed}
-.opt.selected{border-color:#7c3aed;background:#f9f5ff}
-.opt .badge{width:44px;height:44px;border-radius:8px;background:#f5f5fa;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
-.opt h4{margin:0 0 2px;font-size:14px}
-.opt p{margin:0;font-size:12px;color:#888}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.modal-actions button{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none}
+.modal-box{background:#fff;border-radius:14px;padding:24px;width:360px;max-width:90%}
+.modal-box h2{font-size:16px;margin:0 0 16px}
+.opt{border:2px solid #e0e0e8;border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.opt:hover{border-color:#f59e0b}
+.opt.sel{border-color:#f59e0b;background:#fef9c3}
+.opt .badge{width:40px;height:40px;border-radius:6px;background:#f5f5fa;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.opt h4{margin:0 0 2px;font-size:13px}
+.opt p{margin:0;font-size:11px;color:#888}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-actions button{flex:1;padding:10px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none}
 .cancel{background:#f0f0f5;color:#444}
-.confirm{background:#7c3aed;color:#fff}
-.toast{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;animation:slide .3s ease}
-@keyframes slide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.confirm{background:#f59e0b;color:#fff}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;animation:slide .3s ease}
+@keyframes slide{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 </head>
 <body>
@@ -121,9 +163,9 @@ h1{font-size:20px;font-weight:600}
   <div class="logo">A</div>
   <h1>Aura</h1>
   <div class="tabs">
-    <button class="tab active" id="tab-chat" onclick="switchTab('chat')">💬 Chat</button>
-    <button class="tab" id="tab-image" onclick="switchTab('image')">🖼️ Imagens</button>
-    <button class="tab" id="tab-design" onclick="switchTab('design')">🎨 Design</button>
+    <button class="tab active" id="tab-chat" onclick="switchTab('chat')">Chat</button>
+    <button class="tab" id="tab-image" onclick="switchTab('image')">Imagens</button>
+    <button class="tab" id="tab-design" onclick="switchTab('design')">Design</button>
   </div>
 </header>
 
@@ -147,465 +189,355 @@ h1{font-size:20px;font-weight:600}
 <div id="image-view" class="view">
   <div class="image-col">
     <div class="prompt-card">
-      <h3>✨ Gerar Imagem com IA</h3>
+      <h3>Gerar Imagem com IA</h3>
       <textarea id="prompt-input" placeholder="Descreva a imagem que quer criar..."></textarea>
       <div class="size-row">
         <label><input type="radio" name="size" value="1024x1024" checked><span>1024×1024</span></label>
         <label><input type="radio" name="size" value="1792x1024"><span>1792×1024</span></label>
         <label><input type="radio" name="size" value="1024x1792"><span>1024×1792</span></label>
       </div>
-      <button class="gen-btn" id="gen-btn" onclick="generateImg()">✨ Gerar Imagem</button>
+      <button class="gen-btn" id="gen-btn" onclick="generateImg()">Gerar Imagem</button>
     </div>
-    <div id="images-result">
-      <div class="empty">🖼️</div>
-    </div>
+    <div id="images-result"><div class="empty">🖼️</div></div>
   </div>
 </div>
 
 <div id="design-view" class="view">
   <div class="design-wrap">
-    <div class="side">
-      <div class="side-section">
-        <h3>Templates</h3>
-        <div class="grid2">
-          <button class="tpl-btn" onclick="setTemplate(1080,1080)">📸<span>Post</span></button>
-          <button class="tpl-btn" onclick="setTemplate(1080,1920)">📱<span>Story</span></button>
-          <button class="tpl-btn" onclick="setTemplate(1200,630)">📘<span>Facebook</span></button>
-          <button class="tpl-btn" onclick="setTemplate(1600,900)">🐦<span>Twitter</span></button>
+    <!-- Sub-tabs: Edit e AI -->
+    <div class="design-subtabs">
+      <button class="sub-tab active" id="sub-edit" onclick="switchDesignTab('edit')">Edit</button>
+      <button class="sub-tab" id="sub-ai" onclick="switchDesignTab('ai')">AI</button>
+    </div>
+
+    <!-- Edit Panel -->
+    <div id="edit-panel" class="edit-panel">
+      <div class="edit-toolbar">
+        <div class="toolbar-group">
+          <select class="toolbar-select" id="toolSelect" onchange="setTool(this.value)">
+            <option value="select">Select</option>
+            <option value="text">Text</option>
+            <option value="rect">Rect</option>
+            <option value="circle">Circle</option>
+            <option value="triangle">Triangle</option>
+          </select>
         </div>
-      </div>
-      <div class="side-section">
-        <h3>Background</h3>
-        <button class="up-btn" onclick="document.getElementById('bg-upload').click()">📁 Imagem de Fundo</button>
-        <button class="up-btn" onclick="setDesignBg()">🎨 Cor Sólida</button>
-        <input type="file" id="bg-upload" style="display:none" accept="image/*" onchange="handleBgUpload(event)">
-      </div>
-      <div class="side-section">
-        <h3>Adicionar</h3>
-        <div class="btns">
-          <button onclick="addDesignText()">✏️ Texto</button>
-          <button onclick="addDesignShape('rect')">⬜ Retângulo</button>
-          <button onclick="addDesignShape('circle')">⭕ Círculo</button>
-          <button onclick="addDesignShape('triangle')">🔺 Triângulo</button>
+        <div class="toolbar-group">
+          <button class="tool-btn" onclick="addElement('text')" title="Texto">T</button>
+          <button class="tool-btn" onclick="addElement('rect')" title="Retangulo">□</button>
+          <button class="tool-btn" onclick="addElement('circle')" title="Circulo">○</button>
+          <button class="tool-btn" onclick="addElement('triangle')" title="Triangulo">△</button>
         </div>
-      </div>
-      <div class="side-section">
-        <h3>Estilo</h3>
-        <div class="row">
-          <label>Cor</label>
-          <input type="color" id="designColor" value="#7c3aed" onchange="updateDesignProp('fill',this.value)">
+        <div class="toolbar-group">
+          <button class="tool-btn" onclick="dUndo()" title="Desfazer">↩</button>
+          <button class="tool-btn" onclick="dRedo()" title="Refazer">↪</button>
+          <button class="tool-btn" onclick="dDelete()" title="Apagar">🗑</button>
         </div>
-        <div class="row">
-          <label>Fonte</label>
-          <select id="designFont" onchange="updateDesignProp('fontFamily',this.value)">
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+          <label style="font-size:11px;color:#666">Cor</label>
+          <input type="color" class="toolbar-color" id="elemColor" value="#f59e0b" onchange="updateSelected('fill',this.value)">
+        </div>
+        <div class="toolbar-group">
+          <label style="font-size:11px;color:#666">Fonte</label>
+          <select class="toolbar-select" id="elemFont" onchange="updateSelected('fontFamily',this.value)">
             <option value="Inter">Inter</option>
             <option value="Arial">Arial</option>
             <option value="Georgia">Georgia</option>
+            <option value="Impact">Impact</option>
           </select>
         </div>
-        <div class="row">
-          <label>Tamanho</label>
-          <input type="number" id="designFontSize" value="48" min="8" max="200" onchange="updateDesignProp('fontSize',parseInt(this.value))">
+        <div class="toolbar-group">
+          <label style="font-size:11px;color:#666">Tam</label>
+          <input type="number" class="toolbar-input" id="elemSize" value="48" min="8" max="300" onchange="updateSelected('fontSize',parseInt(this.value))">
+        </div>
+        <div class="toolbar-spacer"></div>
+        <div class="zoom-controls">
+          <button class="zoom-btn" onclick="dZoomOut()">−</button>
+          <span class="zoom-label" id="zoomLbl">100%</span>
+          <button class="zoom-btn" onclick="dZoomIn()">+</button>
+        </div>
+        <button class="export-btn" onclick="showExp()">Exportar</button>
+      </div>
+      <div class="canvas-container">
+        <div class="canvas-wrap">
+          <div class="canvas-inner">
+            <canvas id="dCanvas" width="1080" height="1080"></canvas>
+          </div>
+        </div>
+        <div class="layers-panel">
+          <div class="layers-header">Camadas</div>
+          <div id="layers"></div>
         </div>
       </div>
-      <div class="side-section layers">
-        <h3>Camadas</h3>
-        <div id="layersList"></div>
-      </div>
     </div>
-    <div class="canvas-area">
-      <div class="canvas-wrap">
-        <canvas id="design-canvas" width="1080" height="1080"></canvas>
+
+    <!-- AI Panel -->
+    <div id="ai-panel" class="ai-panel" style="display:none">
+      <div class="ai-chat">
+        <div class="ai-header">
+          <div class="ai-header-icon">AI</div>
+          <div class="ai-header-text">
+            <div class="ai-header-title">Design AI</div>
+            <div class="ai-header-sub">Crie designs com IA</div>
+          </div>
+        </div>
+        <div class="ai-msgs" id="aiMsgs">
+          <div class="ai-msg ai">Olá! Sou o Design AI. Descreva o que quer criar e eu monto para você!</div>
+        </div>
+        <div class="ai-quick">
+          <button onclick="sendAi('Crie um post promocional preto e dourado')">Post</button>
+          <button onclick="sendAi('Story minimalista branco')">Story</button>
+          <button onclick="sendAi('Banner facebook')">Banner</button>
+        </div>
+        <div class="ai-input">
+          <input type="text" id="aiInput" placeholder="Ex: Crie um post promocional..." onkeydown="if(event.key==='Enter')sendAi('')">
+          <button onclick="sendAi('')" id="aiBtn">↑</button>
+        </div>
       </div>
-      <div class="toolbar">
-        <button onclick="designUndo()" title="Desfazer">↩️</button>
-        <button onclick="designRedo()" title="Refazer">↪️</button>
-        <button onclick="designDelete()" title="Apagar">🗑️</button>
-        <span class="sep"></span>
-        <button onclick="designZoomOut()">−</button>
-        <span class="zoom" id="zoomDisplay">100%</span>
-        <button onclick="designZoomIn()">+</button>
-        <span class="sep"></span>
-        <button class="export-btn" onclick="showDesignExport()">📥 Exportar</button>
+      <div class="ai-canvas">
+        <div class="ai-canvas-header">
+          <span style="font-size:13px;color:#666">Canvas</span>
+          <div class="zoom-controls">
+            <button class="zoom-btn" onclick="aiZoomOut()">−</button>
+            <span class="zoom-label" id="aiZoomLbl">100%</span>
+            <button class="zoom-btn" onclick="aiZoomIn()">+</button>
+          </div>
+          <button class="export-btn" onclick="showExp()">Exportar</button>
+        </div>
+        <div class="ai-canvas-wrap">
+          <div class="ai-canvas-inner">
+            <canvas id="aiCanvas" width="1080" height="1080"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal" id="exportModal">
+<div class="modal" id="expModal">
   <div class="modal-box">
-    <h2>Exportar Design</h2>
-    <div class="opt selected" onclick="selectFormat('png',this)">
+    <h2>Exportar</h2>
+    <div class="opt sel" onclick="selF('png',this)">
       <div class="badge">PNG</div>
-      <div><h4>PNG</h4><p>Com transparência</p></div>
+      <div><h4>PNG</h4><p>Com transparencia</p></div>
     </div>
-    <div class="opt" onclick="selectFormat('jpeg',this)">
+    <div class="opt" onclick="selF('jpeg',this)">
       <div class="badge">JPG</div>
       <div><h4>JPEG</h4><p>Menor arquivo</p></div>
     </div>
     <div class="modal-actions">
-      <button class="cancel" onclick="hideExport()">Cancelar</button>
-      <button class="confirm" onclick="exportDesign()">Baixar</button>
+      <button class="cancel" onclick="hideExp()">Cancelar</button>
+      <button class="confirm" onclick="doExp()">Baixar</button>
     </div>
   </div>
 </div>
 
 <script>
-// ===== CONFIG =====
 const CHAT_API = 'https://api.kpalabz.com/v1/messages';
 const CHAT_KEY = 'sk-kpa-5e547f13b6323da4fea5f15fa600db8ce1af20cdc45e3105c05288fe40870d95';
 const CHAT_MODEL = 'claude-sonnet-4-20250514';
 const OPENAI_KEY = 'sk-your-openai-key-here';
 
-// ===== TABS =====
 function switchTab(tab) {
-  var tabs = document.querySelectorAll('.tab');
-  var views = document.querySelectorAll('.view');
-  tabs.forEach(function(t) { t.classList.remove('active'); });
-  views.forEach(function(v) { v.classList.remove('active'); });
-  document.getElementById(tab + '-view').classList.add('active');
-  if (tab === 'chat') document.getElementById('tab-chat').classList.add('active');
-  if (tab === 'image') document.getElementById('tab-image').classList.add('active');
-  if (tab === 'design') document.getElementById('tab-design').classList.add('active');
-  if (tab === 'design') { initDesign(); }
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById(tab+'-view').classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='design'){initDesign();switchDesignTab('edit');}
 }
 
-// ===== CHAT =====
-var msgs = [];
-var dots = document.getElementById('dots');
-var msgCol = document.getElementById('msg-col');
-var msgInput = document.getElementById('msg-input');
+function switchDesignTab(tab) {
+  document.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('active')});
+  document.getElementById('sub-'+tab).classList.add('active');
+  document.getElementById('edit-panel').style.display = tab==='edit'?'flex':'none';
+  document.getElementById('ai-panel').style.display = tab==='ai'?'flex':'none';
+  if(tab==='ai')initAiCanvas();
+}
 
-function addMsg(role, text) {
-  var div = document.createElement('div');
-  div.className = 'msg ' + role;
-  if (role === 'user') {
-    div.textContent = text;
-  } else {
-    div.innerHTML = '<div class="logo"></div><div class="text">' + text + '</div>';
+// CHAT
+var msgs=[],dots=document.getElementById('dots'),msgCol=document.getElementById('msg-col'),msgIn=document.getElementById('msg-input');
+function addM(role,text){
+  var d=document.createElement('div');d.className='msg '+role;
+  if(role==='user')d.textContent=text;else d.innerHTML='<div class=logo></div><div class=text>'+text+'</div>';
+  msgCol.insertBefore(d,dots);msgCol.scrollTop=msgCol.scrollHeight;
+}
+function sendMsg(){
+  var v=msgIn.value.trim();if(!v||dots.style.display==='flex')return;
+  msgs.push({role:'user',content:v});addM('user',v);msgIn.value='';dots.style.display='flex';msgCol.scrollTop=msgCol.scrollHeight;
+  fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})}).then(function(r){return r.json()}).then(function(d){
+    dots.style.display='none';var t=d.reply||'Erro: '+(d.error||'desconhecido');msgs.push({role:'assistant',content:t});addM('ai',t);
+  }).catch(function(e){dots.style.display='none';addM('ai','Erro: '+e.message);});
+}
+msgIn.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
+
+// IMAGES
+var imgs=[];
+function genImg(){
+  var prompt=document.getElementById('prompt-input').value.trim();if(!prompt)return;
+  var size=document.querySelector('input[name="size"]:checked').value;
+  var btn=document.getElementById('gen-btn');btn.disabled=true;btn.textContent='Gerando...';
+  document.getElementById('images-result').innerHTML='<div class=loading><div class=spinner></div>Gerando...</div>';
+  fetch('/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,size:size})}).then(function(r){return r.json()}).then(function(d){
+    btn.disabled=false;btn.textContent='Gerar Imagem';
+    if(d.error){document.getElementById('images-result').innerHTML='<div style=color:#b00020;padding:20px>'+d.error+'</div>';return;}
+    imgs.unshift({url:d.url,prompt:prompt});rImgs();
+  }).catch(function(e){btn.disabled=false;btn.textContent='Gerar Imagem';document.getElementById('images-result').innerHTML='<div style=color:#b00020;padding:20px>'+e.message+'</div>'});
+}
+function rImgs(){
+  var el=document.getElementById('images-result');
+  if(imgs.length===0){el.innerHTML='<div class=empty>🖼️</div>';return;}
+  var h='<div class=images-grid>';
+  imgs.forEach(function(i){h+='<div class=img-card><img src='+i.url+' alt=""><div class=actions><button class=btn-download onclick="dlImg(\''+i.url+'\')">Baixar</button><button class=btn-open onclick="window.open(\''+i.url+'\')">Abrir</button></div></div>';});
+  h+='</div>';el.innerHTML=h;
+}
+function dlImg(url){var a=document.createElement('a');a.href=url;a.download='aura-'+Date.now()+'.png';a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);}
+rImgs();
+
+// DESIGN - EDIT
+var dc=null,hist=[],hi=-1,zoom=1,fmt='png',dw=1080,dh=1080,initD=false;
+
+function initDesign(){
+  if(initD)return;initD=true;
+  dc=new fabric.Canvas('dCanvas',{backgroundColor:'#ffffff',selection:true});
+  dc.on('selection:created',upLayers);dc.on('selection:updated',upLayers);dc.on('selection:cleared',upLayers);
+  dc.on('object:added',saveS);dc.on('object:modified',saveS);
+  saveS();upLayers();
+}
+
+function setTool(tool){
+  if(tool==='select'){dc.selection=true;dc.defaultCursor='default';}
+  else{dc.selection=false;dc.defaultCursor='crosshair';}
+}
+
+function addElement(type){
+  var c=document.getElementById('elemColor').value;
+  var p={left:dw/2,top:dh/2,fill:c,originX:'center',originY:'center'};
+  var o=null;
+  if(type==='text'){
+    o=new fabric.IText('Texto',{left:dw/2,top:dh/2,fontSize:48,fontFamily:'Inter',fill:c,originX:'center',originY:'center'});
+    dc.add(o);dc.setActiveObject(o);o.enterEditing();o.selectAll();
+  }else if(type==='rect'){
+    o=new fabric.Rect({width:200,height:150});
+  }else if(type==='circle'){
+    o=new fabric.Circle({radius:100});
+  }else if(type==='triangle'){
+    o=new fabric.Triangle({width:180,height:150});
   }
-  msgCol.insertBefore(div, dots);
-  msgCol.scrollTop = msgCol.scrollHeight;
+  if(o){o.set(p);dc.add(o);dc.setActiveObject(o);dc.renderAll();}
 }
 
-function sendMsg() {
-  var v = msgInput.value.trim();
-  if (!v || dots.style.display === 'flex') return;
-  msgs.push({role: 'user', content: v});
-  addMsg('user', v);
-  msgInput.value = '';
-  dots.style.display = 'flex';
-  msgCol.scrollTop = msgCol.scrollHeight;
-
-  fetch('/chat', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({messages: msgs})
-  }).then(function(r) { return r.json(); })
-    .then(function(d) {
-      dots.style.display = 'none';
-      var t = d.reply || 'Erro: ' + (d.error || 'desconhecido');
-      msgs.push({role: 'assistant', content: t});
-      addMsg('ai', t);
-    })
-    .catch(function(e) {
-      dots.style.display = 'none';
-      addMsg('ai', 'Erro: ' + e.message);
-    });
+function updateSelected(prop,val){
+  var o=dc.getActiveObject();if(o){o.set(prop,val);dc.renderAll();saveS();}
 }
 
-msgInput.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMsg();
-  }
-});
-
-// ===== IMAGES =====
-var generatedImages = [];
-
-function generateImg() {
-  var prompt = document.getElementById('prompt-input').value.trim();
-  if (!prompt) return;
-  var size = document.querySelector('input[name="size"]:checked').value;
-  var btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.textContent = 'Gerando...';
-  document.getElementById('images-result').innerHTML = '<div class="loading"><div class="spinner"></div>Gerando...</div>';
-
-  fetch('/image', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({prompt: prompt, size: size})
-  }).then(function(r) { return r.json(); })
-    .then(function(d) {
-      btn.disabled = false;
-      btn.textContent = '✨ Gerar Imagem';
-      if (d.error) {
-        document.getElementById('images-result').innerHTML = '<div style="color:#b00020;padding:20px">' + d.error + '</div>';
-        return;
-      }
-      generatedImages.unshift({url: d.url, prompt: prompt});
-      renderImages();
-    })
-    .catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = '✨ Gerar Imagem';
-      document.getElementById('images-result').innerHTML = '<div style="color:#b00020;padding:20px">' + e.message + '</div>';
-    });
-}
-
-function renderImages() {
-  var el = document.getElementById('images-result');
-  if (generatedImages.length === 0) {
-    el.innerHTML = '<div class="empty">🖼️</div>';
-    return;
-  }
-  var html = '<div class="images-grid">';
-  generatedImages.forEach(function(img) {
-    html += '<div class="img-card"><img src="' + img.url + '" alt=""><div class="actions"><button class="btn-download" onclick="downloadImg(\'' + img.url + '\')">Baixar</button><button class="btn-open" onclick="window.open(\'' + img.url + '\')">Abrir</button></div></div>';
-  });
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function downloadImg(url) {
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'aura-' + Date.now() + '.png';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-// ===== DESIGN =====
-var dCanvas = null;
-var dHistory = [];
-var dHistoryIndex = -1;
-var dZoom = 1;
-var dFormat = 'png';
-var dW = 1080;
-var dH = 1080;
-var dInit = false;
-
-function initDesign() {
-  if (dInit) return;
-  dInit = true;
-  dCanvas = new fabric.Canvas('design-canvas', {
-    backgroundColor: '#ffffff',
-    selection: true
-  });
-  dCanvas.on('selection:created', updateLayers);
-  dCanvas.on('selection:updated', updateLayers);
-  dCanvas.on('selection:cleared', updateLayers);
-  dCanvas.on('object:added', saveState);
-  dCanvas.on('object:modified', saveState);
-  saveState();
-  updateLayers();
-}
-
-function setTemplate(w, h) {
-  dW = w;
-  dH = h;
-  dCanvas.setWidth(w);
-  dCanvas.setHeight(h);
-  dCanvas.clear();
-  dCanvas.backgroundColor = '#ffffff';
-  saveState();
-  updateLayers();
-}
-
-function addDesignText() {
-  var text = new fabric.IText('Texto', {
-    left: dW / 2,
-    top: dH / 2,
-    fontSize: 48,
-    fontFamily: 'Inter',
-    fill: document.getElementById('designColor').value,
-    originX: 'center',
-    originY: 'center'
-  });
-  dCanvas.add(text);
-  dCanvas.setActiveObject(text);
-  text.enterEditing();
-  text.selectAll();
-  dCanvas.renderAll();
-}
-
-function addDesignShape(type) {
-  var color = document.getElementById('designColor').value;
-  var props = {left: dW / 2, top: dH / 2, fill: color, originX: 'center', originY: 'center'};
-  var shape = null;
-  if (type === 'rect') {
-    shape = new fabric.Rect({width: 200, height: 150});
-  } else if (type === 'circle') {
-    shape = new fabric.Circle({radius: 100});
-  } else if (type === 'triangle') {
-    shape = new fabric.Triangle({width: 180, height: 150});
-  }
-  if (shape) {
-    shape.set(props);
-    dCanvas.add(shape);
-    dCanvas.setActiveObject(shape);
-    dCanvas.renderAll();
-  }
-}
-
-function updateDesignProp(prop, val) {
-  var obj = dCanvas.getActiveObject();
-  if (obj) {
-    obj.set(prop, val);
-    dCanvas.renderAll();
-    saveState();
-  }
-}
-
-function handleBgUpload(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(f) {
-    fabric.Image.fromURL(f.target.result, function(img) {
-      img.set({width: dW, height: dH, left: 0, top: 0, selectable: false, evented: false});
-      dCanvas.backgroundImage = img;
-      dCanvas.renderAll();
-      saveState();
-    });
-  };
-  reader.readAsDataURL(file);
-}
-
-function setDesignBg() {
-  var color = prompt('Cor hex:', '#7c3aed');
-  if (color) {
-    dCanvas.backgroundColor = color;
-    dCanvas.backgroundImage = null;
-    dCanvas.renderAll();
-    saveState();
-  }
-}
-
-function updateLayers() {
-  var list = document.getElementById('layersList');
-  var objs = dCanvas.getObjects().slice().reverse();
-  list.innerHTML = objs.map(function(obj, i) {
-    var name = obj.type === 'i-text' ? 'Texto' : 'Objeto';
-    var sel = dCanvas.getActiveObject() === obj;
-    return '<div class="layer' + (sel ? ' selected' : '') + '" onclick="selectLayer(' + (objs.length - 1 - i) + ')"><span class="layer-icon">✏️</span><span class="layer-name">' + name + '</span><button class="layer-del" onclick="event.stopPropagation();delLayer(' + (objs.length - 1 - i) + ')">🗑️</button></div>';
+function upLayers(){
+  var el=document.getElementById('layers');var objs=dc.getObjects().slice().reverse();
+  el.innerHTML=objs.map(function(o,i){
+    var n=o.type==='i-text'?'Texto':'Objeto',s=dc.getActiveObject()===o;
+    return'<div class="layer-item'+(s?' selected':'')+'" onclick="selL('+(objs.length-1-i)+')"><span class=layer-icon>✏️</span><span class=layer-name>'+n+'</span><button class=layer-del onclick="event.stopPropagation();delL('+(objs.length-1-i)+')">×</button></div>';
   }).join('');
 }
 
-function selectLayer(i) {
-  var objs = dCanvas.getObjects();
-  dCanvas.setActiveObject(objs[i]);
-  dCanvas.renderAll();
+function selL(i){var objs=dc.getObjects();dc.setActiveObject(objs[i]);dc.renderAll();}
+function delL(i){var objs=dc.getObjects();dc.remove(objs[i]);dc.renderAll();}
+function dDelete(){var o=dc.getActiveObject();if(o){dc.remove(o);dc.renderAll();}}
+
+function saveS(){
+  var j=JSON.stringify(dc.toJSON());
+  if(hi<hist.length-1)hist=hist.slice(0,hi+1);
+  hist.push(j);hi=hist.length-1;
+  if(hist.length>50){hist.shift();hi--;}
+  upLayers();
 }
 
-function delLayer(i) {
-  var objs = dCanvas.getObjects();
-  dCanvas.remove(objs[i]);
-  dCanvas.renderAll();
+function dUndo(){if(hi>0){hi--;dc.loadFromJSON(hist[hi],function(){dc.renderAll();upLayers();});}}
+function dRedo(){if(hi<hist.length-1){hi++;dc.loadFromJSON(hist[hi],function(){dc.renderAll();upLayers();});}}
+
+function dZoomIn(){zoom=Math.min(zoom+0.1,3);document.querySelector('.canvas-inner').style.transform='scale('+zoom+')';document.getElementById('zoomLbl').textContent=Math.round(zoom*100)+'%';}
+function dZoomOut(){zoom=Math.max(zoom-0.1,0.25);document.querySelector('.canvas-inner').style.transform='scale('+zoom+')';document.getElementById('zoomLbl').textContent=Math.round(zoom*100)+'%';}
+
+// AI CANVAS
+var aiC=null,aiInit=false,aiZoom=1;
+
+function initAiCanvas(){
+  if(aiInit)return;aiInit=true;
+  aiC=new fabric.Canvas('aiCanvas',{backgroundColor:'#ffffff',selection:true});
+  aiC.on('object:added',saveAiS);aiC.on('object:modified',saveAiS);
+  saveAiS();
 }
 
-function designDelete() {
-  var obj = dCanvas.getActiveObject();
-  if (obj) {
-    dCanvas.remove(obj);
-    dCanvas.renderAll();
+function saveAiS(){
+  aiC.renderAll();
+}
+
+// AI ZOOM
+function aiZoomIn(){aiZoom=Math.min(aiZoom+0.1,3);document.querySelector('.ai-canvas-inner').style.transform='scale('+aiZoom+')';document.getElementById('aiZoomLbl').textContent=Math.round(aiZoom*100)+'%';}
+function aiZoomOut(){aiZoom=Math.max(aiZoom-0.1,0.25);document.querySelector('.ai-canvas-inner').style.transform='scale('+aiZoom+')';document.getElementById('aiZoomLbl').textContent=Math.round(aiZoom*100)+'%';}
+
+// DESIGN AI CHAT
+function addAiMsg(role,text){
+  var el=document.getElementById('aiMsgs');
+  var d=document.createElement('div');d.className='ai-msg '+role;d.textContent=text;el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function showAiLoad(){
+  var el=document.getElementById('aiMsgs');
+  var d=document.createElement('div');d.className='ai-load';d.id='aiLoad';d.innerHTML='<span></span><span></span><span></span>';el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function hideAiLoad(){var el=document.getElementById('aiLoad');if(el)el.remove();}
+function sendAi(prompt){
+  if(prompt!==''){document.getElementById('aiInput').value=prompt;}
+  prompt=document.getElementById('aiInput').value.trim();
+  if(!prompt)return;
+  var btn=document.getElementById('aiBtn');btn.disabled=true;
+  addAiMsg('user',prompt);document.getElementById('aiInput').value='';showAiLoad();
+
+  fetch('/design-chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt:prompt,canvasWidth:dw,canvasHeight:dh})
+  }).then(function(r){return r.json()}).then(function(d){
+    hideAiLoad();btn.disabled=false;
+    if(d.error){addAiMsg('ai error',d.error);return;}
+    addAiMsg('ai',d.message||'Feito!');
+    if(d.actions){d.actions.forEach(function(a){applyAiAction(a);});}
+  }).catch(function(e){hideAiLoad();btn.disabled=false;addAiMsg('ai error','Erro: '+e.message);});
+}
+
+function applyAiAction(a){
+  if(a.type==='background'){aiC.backgroundColor=a.color;aiC.backgroundImage=null;aiC.renderAll();}
+  else if(a.type==='text'){
+    var t=new fabric.IText(a.content||'Texto',{left:a.x||dw/2,top:a.y||dh/2,fontSize:a.fontSize||48,fontFamily:a.fontFamily||'Inter',fill:a.color||'#fff',originX:'center',originY:'center'});
+    aiC.add(t);aiC.renderAll();
+  }else if(a.type==='shape'){
+    var p={left:a.x||dw/2,top:a.y||dh/2,fill:a.color||'#f59e0b',originX:'center',originY:'center'};
+    var s=null;
+    if(a.shape==='rect')s=new fabric.Rect({width:a.width||200,height:a.height||150});
+    else if(a.shape==='circle')s=new fabric.Circle({radius:a.radius||100});
+    else if(a.shape==='triangle')s=new fabric.Triangle({width:180,height:150});
+    if(s){s.set(p);aiC.add(s);aiC.renderAll();}
   }
 }
 
-function saveState() {
-  var json = JSON.stringify(dCanvas.toJSON());
-  if (dHistoryIndex < dHistory.length - 1) {
-    dHistory = dHistory.slice(0, dHistoryIndex + 1);
+// EXPORT
+function selF(f,el){fmt=f;document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel')});el.classList.add('sel');}
+function showExp(){document.getElementById('expModal').classList.add('active');}
+function hideExp(){document.getElementById('expModal').classList.remove('active');}
+function doExp(){
+  var activeCanvas=document.getElementById('edit-panel').style.display!=='none'?dc:aiC;
+  var u=activeCanvas.toDataURL({format:fmt,quality:1});var a=document.createElement('a');
+  a.download='design-'+Date.now()+'.'+fmt;a.href=u;a.click();hideExp();
+  var t=document.createElement('div');t.className='toast';t.textContent='Exportado!';document.body.appendChild(t);
+  setTimeout(function(){t.remove()},3000);
+}
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown',function(e){
+  if((e.key==='Delete'||e.key==='Backspace')&&document.getElementById('design-view').classList.contains('active')){
+    var o=dc.getActiveObject();if(o&&!o.isEditing){dc.remove(o);dc.renderAll();}
   }
-  dHistory.push(json);
-  dHistoryIndex = dHistory.length - 1;
-  if (dHistory.length > 50) {
-    dHistory.shift();
-    dHistoryIndex--;
-  }
-  updateLayers();
-}
-
-function designUndo() {
-  if (dHistoryIndex > 0) {
-    dHistoryIndex--;
-    dCanvas.loadFromJSON(dHistory[dHistoryIndex], function() {
-      dCanvas.renderAll();
-      updateLayers();
-    });
-  }
-}
-
-function designRedo() {
-  if (dHistoryIndex < dHistory.length - 1) {
-    dHistoryIndex++;
-    dCanvas.loadFromJSON(dHistory[dHistoryIndex], function() {
-      dCanvas.renderAll();
-      updateLayers();
-    });
-  }
-}
-
-function designZoomIn() {
-  dZoom = Math.min(dZoom + 0.1, 3);
-  document.querySelector('.canvas-wrap').style.transform = 'scale(' + dZoom + ')';
-  document.getElementById('zoomDisplay').textContent = Math.round(dZoom * 100) + '%';
-}
-
-function designZoomOut() {
-  dZoom = Math.max(dZoom - 0.1, 0.25);
-  document.querySelector('.canvas-wrap').style.transform = 'scale(' + dZoom + ')';
-  document.getElementById('zoomDisplay').textContent = Math.round(dZoom * 100) + '%';
-}
-
-function selectFormat(f, el) {
-  dFormat = f;
-  document.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
-  el.classList.add('selected');
-}
-
-function showDesignExport() {
-  document.getElementById('exportModal').classList.add('active');
-}
-
-function hideExport() {
-  document.getElementById('exportModal').classList.remove('active');
-}
-
-function exportDesign() {
-  var dataUrl = dCanvas.toDataURL({format: dFormat, quality: 1});
-  var a = document.createElement('a');
-  a.download = 'design-' + Date.now() + '.' + dFormat;
-  a.href = dataUrl;
-  a.click();
-  hideExport();
-  var t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = 'Exportado!';
-  document.body.appendChild(t);
-  setTimeout(function() { t.remove(); }, 3000);
-}
-
-document.addEventListener('keydown', function(e) {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && document.getElementById('design-view').classList.contains('active')) {
-    var obj = dCanvas.getActiveObject();
-    if (obj && !obj.isEditing) {
-      dCanvas.remove(obj);
-      dCanvas.renderAll();
-    }
-  }
-  if (e.ctrlKey && e.key === 'z' && document.getElementById('design-view').classList.contains('active')) {
-    e.preventDefault();
-    designUndo();
-  }
-  if (e.ctrlKey && e.key === 'y' && document.getElementById('design-view').classList.contains('active')) {
-    e.preventDefault();
-    designRedo();
-  }
+  if(e.ctrlKey&&e.key==='z'&&document.getElementById('design-view').classList.contains('active')){e.preventDefault();dUndo();}
+  if(e.ctrlKey&&e.key==='y'&&document.getElementById('design-view').classList.contains('active')){e.preventDefault();dRedo();}
 });
 </script>
 </body>
